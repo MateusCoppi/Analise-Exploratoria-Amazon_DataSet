@@ -8,6 +8,13 @@ import seaborn as sns
 dados = pd.read_excel("Amazon.xlsx")
 dados.head()
 
+Order ID	Order Date	Ship Date	EmailID	Geography	Category	Product Name	Sales	Quantity	Profit
+0	CA-2013-138688	2013-06-13	2013-06-17	DarrinVanHuff@gmail.com	United States,Los Angeles,California	Labels	Self-Adhesive Address Labels for Typewriters b...	14.620	2	6.8714
+1	CA-2011-115812	2011-06-09	2011-06-14	BrosinaHoffman@gmail.com	United States,Los Angeles,California	Furnishings	Eldon Expressions Wood and Plastic Desk Access...	48.860	7	14.1694
+2	CA-2011-115812	2011-06-09	2011-06-14	BrosinaHoffman@gmail.com	United States,Los Angeles,California	Art	Newell 322	7.280	4	1.9656
+3	CA-2011-115812	2011-06-09	2011-06-14	BrosinaHoffman@gmail.com	United States,Los Angeles,California	Phones	Mitel 5320 IP Phone VoIP phone	907.152	4	90.7152
+4	CA-2011-115812	2011-06-09	2011-06-14	BrosinaHoffman@gmail.com	United States,Los Angeles,California	Binders	DXL Angle-View Binders with Locking Rings by S...	18.504	3	5.7825
+
 print(dados.info())
 print("-" * 60)
 print(dados.describe())
@@ -55,12 +62,26 @@ dtype: int64
 
 dados.sort_values(by='Order Date', ascending=False)
 
+	Order ID	Order Date	Ship Date	EmailID	Geography	Category	Product Name	Sales	Quantity	Profit
+389	CA-2014-115427	2014-12-31	2015-01-04	EricaBern@gmail.com	United States,Fairfield,California	Binders	GBC Binding covers	20.720	2	6.4750
+1638	CA-2014-156720	2014-12-31	2015-01-04	JillMatthias@gmail.com	United States,Loveland,Colorado	Fasteners	Bagged Rubber Bands	3.024	3	-0.6048
+388	CA-2014-115427	2014-12-31	2015-01-04	EricaBern@gmail.com	United States,Fairfield,California	Binders	Cardinal Slant-D Ring Binder, Heavy Gauge Vinyl	13.904	2	4.5188
+1756	CA-2014-130631	2014-12-30	2015-01-03	BruceStewart@gmail.com	United States,Edmonds,Washington	Fasteners	Acco Glide Clips	19.600	5	9.6040
+1641	CA-2014-146626	2014-12-30	2015-01-06	BenPeterman@gmail.com	United States,Anaheim,California	Furnishings	Nu-Dell Executive Frame	101.120	8	37.4144
+...	...	...	...	...	...	...	...	...	...	...
+1719	CA-2011-123477	2011-01-19	2011-01-22	DavidWiener@gmail.com	United States,Springfield,Oregon	Appliances	Fellowes Mighty 8 Compact Surge Protector	64.864	4	6.4864
+1581	CA-2011-157147	2011-01-14	2011-01-19	BrianDahlen@gmail.com	United States,San Francisco,California	Art	4009 Highlighters by Sanford	19.900	5	6.5670
+1580	CA-2011-157147	2011-01-14	2011-01-19	BrianDahlen@gmail.com	United States,San Francisco,California	Bookcases	O'Sullivan Elevations Bookcase, Cherry Finish	333.999	3	3.9294
+1579	CA-2011-157147	2011-01-14	2011-01-19	BrianDahlen@gmail.com	United States,San Francisco,California	Storage	Tennsco 6- and 18-Compartment Lockers	1325.850	5	238.6530
+1707	CA-2011-130813	2011-01-07	2011-01-09	LycorisSaunders@gmail.com	United States,Los Angeles,California	Paper	Xerox 225	19.440	3	9.3312
+3203 rows × 10 columns
+
+
 # Criando novas colunas para facilitar a análise, visualização e criação de gráficos...
 
 dados['unitary_value'] = dados['Sales'] / dados['Quantity']
 dados['unitary_profit'] = dados['Profit'] / dados['Quantity']
 dados[['Country', 'City', 'State']] = dados['Geography'].str.split(",", expand=True)
-dados.head()
 
 venda_estado = dados.groupby('State')['Sales'].sum()
 venda_estado = venda_estado.reset_index()
@@ -92,5 +113,4 @@ dados.query('Sales > 4000')
 # valores altos não são outliers
 
 ## A partir disso irei passar minha análise para o Power BI para conseguir fazer gráficos com mais rápidez e praticidade para tirar insights e levantar questionamentos a respeitos desses dados.
-
 ## A base de dados já veio da fonte em formatos adequados e sem anomalias o que facilitou a limpeza inicial do dataset.
