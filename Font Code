@@ -1,0 +1,96 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Análise exploratória dos dados
+
+dados = pd.read_excel("Amazon.xlsx")
+dados.head()
+
+print(dados.info())
+print("-" * 60)
+print(dados.describe())
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3203 entries, 0 to 3202
+Data columns (total 10 columns):
+ #   Column        Non-Null Count  Dtype         
+---  ------        --------------  -----         
+ 0   Order ID      3203 non-null   object        
+ 1   Order Date    3203 non-null   datetime64[ns]
+ 2   Ship Date     3203 non-null   datetime64[ns]
+ 3   EmailID       3203 non-null   object        
+ 4   Geography     3203 non-null   object        
+ 5   Category      3203 non-null   object        
+ 6   Product Name  3203 non-null   object        
+ 7   Sales         3203 non-null   float64       
+ 8   Quantity      3203 non-null   int64         
+ 9   Profit        3203 non-null   float64       
+dtypes: datetime64[ns](2), float64(2), int64(1), object(5)
+memory usage: 250.4+ KB
+None
+------------------------------------------------------------
+              Sales     Quantity       Profit
+count   3203.000000  3203.000000  3203.000000
+mean     226.493233     3.828910    33.849032
+std      524.876877     2.260947   174.109081
+min        0.990000     1.000000 -3399.980000
+25%       19.440000     2.000000     3.852000
+50%       60.840000     3.000000    11.166400
+75%      215.809000     5.000000    33.000400
+max    13999.960000    14.000000  6719.980800
+
+dados.isnull().sum()
+Order ID        0
+Order Date      0
+Ship Date       0
+EmailID         0
+Geography       0
+Category        0
+Product Name    0
+Sales           0
+Quantity        0
+Profit          0
+dtype: int64
+
+dados.sort_values(by='Order Date', ascending=False)
+
+# Criando novas colunas para facilitar a análise, visualização e criação de gráficos...
+
+dados['unitary_value'] = dados['Sales'] / dados['Quantity']
+dados['unitary_profit'] = dados['Profit'] / dados['Quantity']
+dados[['Country', 'City', 'State']] = dados['Geography'].str.split(",", expand=True)
+dados.head()
+
+venda_estado = dados.groupby('State')['Sales'].sum()
+venda_estado = venda_estado.reset_index()
+venda_estado = venda_estado.sort_values(by='Sales', ascending=False)
+sns.barplot(data = venda_estado, y = 'State', x = 'Sales', orient = 'h')
+
+dados['mesano'] = dados['Order Date'].dt.to_period('M')
+dados = dados.sort_values(by='Order Date')
+vendas_mes = dados.groupby('mesano')['Sales'].sum()
+vendas_mes = vendas_mes.reset_index()
+vendas_mes['mesano'] = vendas_mes['mesano'].astype(str)
+ax = plt.figure(figsize=(18,6))
+ax = sns.lineplot(data=vendas_mes, x='mesano', y='Sales')
+ax.set_xticks(range(0, len(vendas_mes), 3))
+ax
+
+
+# Apesar de não conseguirmos visualizar nenhum padrão CLARO nos dados é possível
+# verificar que no meses 01 e 02 de cada ano apresenta uma queda nas vendas.
+dados.drop('mesano', axis=1, inplace=True)
+
+# Verificando Outliers
+sns.boxplot(data=dados['Sales'], orient='h')
+
+
+dados.query('Sales > 4000')
+
+# Considerando a categoria dos produtos vendidos estou assumindo que as vendas de 
+# valores altos não são outliers
+
+## A partir disso irei passar minha análise para o Power BI para conseguir fazer gráficos com mais rápidez e praticidade para tirar insights e levantar questionamentos a respeitos desses dados.
+
+## A base de dados já veio da fonte em formatos adequados e sem anomalias o que facilitou a limpeza inicial do dataset.
